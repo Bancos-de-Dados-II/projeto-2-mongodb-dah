@@ -1,0 +1,69 @@
+/* ======= Reset Global ======= */
+* {
+  margin: 0;
+  padding: 0;
+  border: none;
+  box-sizing: border-box;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* ======= Navbar ======= */
+.navbar-custom {
+  background-color: #ff0000 !important; /* Define a cor do Navbar */
+}
+
+.navbar-custom .nav-link,
+.navbar-custom .navbar-brand {
+  color: rgb(246, 0, 0) !important;
+}
+
+/* ======= Imagem do Navbar ======= */
+#navbar-img {
+  height: 70px;
+  padding-left: 10px;
+}
+
+/* ======= Responsividade ======= */
+@media (max-width: 768px) {
+  #navbarSupportedContent ul * {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+/* ======= Mapa ======= */
+#map-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-top: 10px; /* Pequeno espaçamento abaixo da navbar */
+}
+
+#map {
+  height: 500px;
+  width: 90%;
+  max-width: 900px; /* Evita que o mapa fique muito largo */
+  border-radius: 8px; /* Adiciona um leve arredondamento */
+}
+
+/* ======= Formulário ======= */
+.form-width {
+  max-width: 400px;
+  margin: auto;
+}
+
+/* ======= Botões ======= */
+.add-btn {
+  margin-top: 5px;
+}
+
+/* ======= Listagem ======= */
+.listar {
+  width: 50%;
+}
+
+/* ======= Footer ======= */
+footer {
+  background-color: #f8f9fa;
+  padding: 10px;
+}
