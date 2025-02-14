@@ -8,13 +8,15 @@
 }
 
 /* ======= Navbar ======= */
-.navbar-custom {
-  background-color: #ff0000 !important; /* Define a cor do Navbar */
+/* Essa regra será aplicada a todas as navbars para que tenham o mesmo visual */
+.navbar {
+  background-color: #6600ff !important;  /* Cor de fundo (azul, altere conforme desejar) */
+  color: #fff !important;
 }
 
-.navbar-custom .nav-link,
-.navbar-custom .navbar-brand {
-  color: rgb(246, 0, 0) !important;
+.navbar .nav-link,
+.navbar .navbar-brand {
+  color: #fff !important;
 }
 
 /* ======= Imagem do Navbar ======= */
@@ -36,14 +38,14 @@
   width: 100%;
   display: flex;
   justify-content: center;
-  margin-top: 10px; /* Pequeno espaçamento abaixo da navbar */
+  margin-top: 10px; /* Espaçamento abaixo da navbar */
 }
 
 #map {
   height: 500px;
   width: 90%;
-  max-width: 900px; /* Evita que o mapa fique muito largo */
-  border-radius: 8px; /* Adiciona um leve arredondamento */
+  max-width: 900px; /* Limita a largura do mapa */
+  border-radius: 8px; /* Arredondamento opcional */
 }
 
 /* ======= Formulário ======= */
