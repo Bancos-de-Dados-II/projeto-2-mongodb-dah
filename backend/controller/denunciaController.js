@@ -1,85 +1,60 @@
-const ocorrenciaModel = require("../model/Ocorrencia");
+import Denuncia from "../model/Denuncia.js";
+import client from "../database/redis.js";
+import Usuario from "../model/Usuario.js";
 
-async function listarOcorrencia(req, res) {
-    const policia = await ocorrenciaModel.find({});
-    res.status(200).send(policia);
-}
-
-async function criaOcorrencia(req, res) {
-    const { titulo, tipo, data, hora, lat, lng } = req.body;
-
-    const cordenada = {
-        type: "Point",
-        coordinates: [lat, lng],
-    };
-
-    const ocorrencia = new ocorrenciaModel({
-        titulo,
-        tipo,
-        data,
-        hora,
-        cordenada,
-    });
-
-    ocorrencia
-        .save()
-        .then(() => {
-            res.status(201).json(ocorrencia);
-        })
-        .catch((error) => {
-            res.status(400).json({ erro: "falha ao salvar." });
-            console.error(error);
-        });
-}
-
-async function deletarCordenada(req, res) {
-    const { id } = req.params;
-    const ocorrencia = await ocorrenciaModel.findByIdAndDelete(id);
-
-    if (!ocorrencia) {
-        res.status(404).json({ erro: "ocorrencia não encontrado" });
+export async function listarDenuncias(req, res){
+    const cache = await client.get('denuncias');
+    if(!cache){
+        const denuncia = await Denuncia.findAll();
+        await client.set('denuncias', 
+            JSON.stringify(denuncia), {'EX': 3600});
+        res.json(denuncia);
+        console.log('Retornando do postgre');
         return;
     }
-
-    await ocorrenciaModel.findByIdAndDelete(id);
-    res.status(204).json({ mensagem: "ocorrencia removido com sucesso" });
+    console.log('Retornando do redis');
+    res.json(JSON.parse(cache));
 }
 
-async function atualizarCordenada(req, res) {
-    const { id } = req.params;
-    const { body } = req;
+export async function criarDenuncia(req, res){
+    try{
+        const denuncias = await Denuncia.create(req.body);
+        res.json(denuncia);
+    }catch(err){
+        res.status(400).send(err.errors[0].message);
+    }
+}
 
-    try {
-        const ocorrencia = await ocorrenciaModel.findByIdAndUpdate(id, body, {
-            new: true,
-        });
+export async function deletarDenuncia(req, res){
+    const denuncia = await Denuncia.findByPk(req.params.id);
+    if(!denuncia){
+        res.status(404).send("Denuncia não encontrada");
+        return;
+    }
+    await denuncia.destroy();
+    res.json(escola);
+}
 
-        if (!ocorrencia) {
-            return res.status(404).json({ erro: "ocorrencia não encontrado" });
+export async function buscarDenuncia(req, res){
+    const denuncia = await Denuncia.findByPk(req.params.id);
+    if(!denuncia){
+        res.status(404).send("Denuncia não encontrada");
+        return;
+    }
+    res.json(denuncia);
+}
+
+export async function atualizarDenuncia(req, res){
+    try{
+        const denuncia = await Denuncia.findByPk(req.params.id);
+        if(!denuncia){
+            res.status(404).send("Denuncia não encontrada");
+            return;
         }
-
-        return res.status(200).json(ocorrencia.toJSON());
-    } catch (error) {
-        console.error("Erro durante a atualização:", error);
-        return res.status(500).json({ erro: "Erro interno do servidor" });
+        denuncia.set(req.body);
+        await denuncia.save();
+        res.json(denuncia);
+    }catch(err){
+        res.status(400).send(err.errors[0].message);
     }
 }
-
-async function buscarPorId(req, res) {
-    const ocorrencia = await ocorrenciaModel.findById(req.params.id);
-
-    if (!ocorrencia) {
-        res.status(404).json({ erro: "ocorrencia não encontrado" });
-        return;
-    }
-
-    res.status(200).json(ocorrencia);
-}
-
-module.exports = {
-    criaOcorrencia,
-    listarOcorrencia,
-    buscarPorId,
-    atualizarCordenada,
-    deletarCordenada,
-};

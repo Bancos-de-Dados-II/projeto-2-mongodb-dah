@@ -1,59 +1,30 @@
-const { DataTypes, Model } = require("sequelize");
-const sequelize = require("../db");
-const Usuario = require("./usuario");
-class Denuncia extends Model {}
-Denuncia.init(
-  {
+import sequelize from "../database/sequelize.js";
+import { DataTypes } from "sequelize";
+
+const Denuncia = sequelize.define('denuncia', {
     id: {
-      type: DataTypes.INTEGER,
-      autoIncrement: true,
-      primaryKey: true,
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
+        primaryKey: true
     },
-    descricao: {
-      type: DataTypes.STRING,
-      allowNull: false,
+    nome: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true
     },
-    categoria: {
-      type: DataTypes.ENUM("roubo", "violência", "tráfico"),
-      allowNull: false,
-    },
-    imagem: {
-      type: DataTypes.STRING,
-      allowNull: true,
-    },
+    localizacao: {
+        type: DataTypes.GEOMETRY('POINT'),
+        allowNull: false
+    }, 
     status: {
-      type: DataTypes.ENUM("pendente", "em andamento", "resolvido"),
-      allowNull: false,
-    },
-    latitude: {
-      type: DataTypes.FLOAT,
-      allowNull: false,
-    },
-    longitude: {
-      type: DataTypes.FLOAT,
-      allowNull: false,
-    },
-    data_denuncia: {
-      type: DataTypes.DATE,
-      allowNull: false,
-      defaultValue: DataTypes.NOW,
-    },
-    usuarioId: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      references: {
-        model: Usuario,
-        key: "id",
-      },
-    },
-  },
-  {
-    sequelize,
-    modelName: "Denuncia",
-    tableName: "denuncias",
-    timestamps: false,
-  }
-);
-Usuario.hasMany(Denuncia, { foreignKey: "usuarioId", as: "denuncias" });
-Denuncia.belongsTo(Usuario, { foreignKey: "usuarioId", as: "usuario" });
-module.exports = Denuncia;
+        type: DataTypes.STRING,
+        allowNull: false
+    }, 
+    tipo: {
+        type: DataTypes.STRING,
+        allowNull: false
+    }
+});
+
+Denuncia.sync();
+export default Denuncia;
