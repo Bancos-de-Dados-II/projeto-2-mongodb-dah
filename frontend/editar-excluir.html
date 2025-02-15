@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Editar/Excluir Ocorrências - H.O.S</title>
+  
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous" />
+  
+  <!-- External CSS -->
+  <link rel="stylesheet" type="text/css" href="Style/style.css" />
+  
+  <style>
+    /* Se desejar ajustes adicionais, coloque-os aqui */
+    .card-list {
+      margin-bottom: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-primary">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="index.html">
+        <img id="navbar-img" src="img source/logo.png" alt="Logo" height="50" />
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item">
+            <a class="nav-link" href="index.html" style="color: #fff;">Hands-On-Safe</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="listaOcorrencia.html" style="color: #fff;">Lista Ocorrência</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="editar-excluir.html" style="color: #fff;">Editar/Excluir Ocorrências</a>
+          </li>
+        </ul>
+        <form class="d-flex" role="search">
+          <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" />
+          <button class="btn btn-success" type="submit" style="color: #fff;">Pesquisar</button>
+        </form>
+      </div>
+    </div>
+  </nav>
+  
+  <!-- Conteúdo Principal -->
+  <div class="container my-4" id="ocorrenciasContainer">
+    <h2 class="text-center mb-4">Editar/Excluir Ocorrências</h2>
+    <!-- A listagem será injetada aqui pelo JavaScript -->
+    <div id="listaOcorrencias"></div>
+  </div>
+  
+  <!-- Footer -->
+  <footer class="text-center text-lg-start bg-light text-muted">
+    <div class="text-center p-4">
+      Danilo Duarte, Henrique Elias. © 2025
+    </div>
+  </footer>
+  
+  <!-- Bootstrap 5 JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+  
+  <!-- JS para a listagem de ocorrências -->
+  <script src="ocorrenciaList.js"></script>
+</body>
+</html>
