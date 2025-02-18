@@ -4,6 +4,16 @@ async function teste(req, res) {
     res.status(201).json("aoba");
 }
 
+async function listarDenuncias(req, res) {
+    try{
+        const denuncia = await Denuncia.find();
+        res.status(200).json(denuncia);
+    }
+    catch(error){
+        res.status(400).json(error);
+    }
+}
+
 async function criarDenuncia(req, res) {
     try{
         console.log(req.body);
@@ -53,4 +63,4 @@ async function atualizarDenuncia(req, res) {
     }
 }
 
-export { teste, criarDenuncia, deletarDenuncia, buscarDenuncia, atualizarDenuncia };
+export { listarDenuncias, criarDenuncia, deletarDenuncia, buscarDenuncia, atualizarDenuncia };
