@@ -1,74 +1,95 @@
-const baseURL = "http://localhost:3000/denuncias"; 
+// Define o endpoint base (como seu backend usa "http://localhost:3000/" sem rota adicional)
+const baseURL = "http://localhost:3000";
 
 function carregarOcorrencias() {
-    fetch(baseURL)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`Erro HTTP! Código: ${response.status}`);
-            }
-            return response.json();
-        })
-        .then(ocorrencias => {
-            console.log("Dados recebidos:", ocorrencias);
-            renderizarNaTela(ocorrencias);
-        })
-        .catch(err => {
-            console.error("Erro ao carregar ocorrências:", err);
-            alert("Erro ao carregar as ocorrências. Verifique o console para mais detalhes.");
-        });
-}
-
-function renderizarNaTela(ocorrencias) {
-    const lista = document.getElementById("listaOcorrencias");
-
-    lista.innerHTML = ""; 
-
-    if (ocorrencias.length === 0) {
-        lista.innerHTML = "<p class='text-center text-muted'>Nenhuma ocorrência encontrada.</p>";
-        return;
-    }
-
-    ocorrencias.forEach(ocorrencia => {
-        const li = document.createElement("li");
-        li.classList.add("list-group-item", "d-flex", "align-items-start"); 
-
-        // Div para o mapa
-        const mapDiv = document.createElement("div");
-        mapDiv.id = `map-${ocorrencia._id}`; 
-        mapDiv.classList.add("map-container"); 
-        li.appendChild(mapDiv);
-
-        // Div para os detalhes da ocorrência
-        const detailsDiv = document.createElement("div");
-        detailsDiv.classList.add("details", "ms-3"); 
-        detailsDiv.innerHTML = `
-            <strong>${ocorrencia.titulo}</strong> - ${ocorrencia.descricao} <br>
-            <small>Data: ${formatarData(ocorrencia.data)} | Hora: ${ocorrencia.hora}</small> <br>
-            <small>Local: ${ocorrencia.localizacao.coordinates[1]}, ${ocorrencia.localizacao.coordinates[0]}</small>
-        `;
-        li.appendChild(detailsDiv);
-
-        lista.appendChild(li);
-
-        // Inicializa o mapa usando Leaflet
-        const map = L.map(mapDiv.id).setView(
-            [ocorrencia.localizacao.coordinates[1], ocorrencia.localizacao.coordinates[0]],
-            13
-        );
-
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; OpenStreetMap contributors',
-        }).addTo(map);
+  fetch(baseURL)
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`Erro HTTP! Código: ${response.status}`);
+      }
+      return response.json();
+    })
+    .then(ocorrencias => {
+      console.log("Dados recebidos:", ocorrencias);
+      renderizarNaTela(ocorrencias);
+    })
+    .catch(err => {
+      console.error("Erro ao carregar ocorrências:", err);
+      alert("Erro ao carregar as ocorrências. Veja o console para detalhes.");
     });
 }
 
-function formatarData(dataString) {
-    const data = new Date(dataString);
-    const dia = String(data.getDate()).padStart(2, '0');
-    const mes = String(data.getMonth() + 1).padStart(2, '0');
-    const ano = data.getFullYear();
-    return `${dia}/${mes}/${ano}`;
+function renderizarNaTela(ocorrencias) {
+    console.log("Ocorrências recebidas para renderizar:", ocorrencias);
+  
+    const lista = document.getElementById("listaOcorrencias");
+    if (!lista) {
+      console.error("Elemento listaOcorrencias não encontrado no HTML!");
+      return;
+    }
+  
+    lista.innerHTML = "";
+  
+    if (!ocorrencias.length) {
+      lista.innerHTML = "<p class='text-center text-muted'>Nenhuma ocorrência encontrada.</p>";
+      return;
+    }
+  
+    ocorrencias.forEach(ocorrencia => {
+      console.log("Processando ocorrência:", ocorrencia);
+  
+      const li = document.createElement("li");
+      li.classList.add("d-flex", "justify-content-between", "align-items-center");
+  
+      let dataFormatada = "";
+      if (ocorrencia.dataOcorrencia) {
+        dataFormatada = ocorrencia.dataOcorrencia.split("T")[0];
+      }
+  
+      li.innerHTML = `
+        <div>
+          <h5>${ocorrencia.nome || "Sem Nome"}</h5>
+          <p>${ocorrencia.descricao || "Sem descrição"}</p>
+          <p>
+            <small>
+              Data: ${dataFormatada} | Horário: ${ocorrencia.horarioOcorrencia || "N/A"}<br>
+              Local: ${
+                ocorrencia.localizacao?.coordinates
+                  ? ocorrencia.localizacao.coordinates[1] + ", " + ocorrencia.localizacao.coordinates[0]
+                  : "N/A"
+              }
+            </small>
+          </p>
+        </div>
+        <div class="d-flex flex-column gap-2">
+          <button class="btn btn-warning btn-sm" onclick="handleEdit('${ocorrencia._id}')">Editar</button>
+          <button class="btn btn-danger btn-sm" onclick="handleDelete('${ocorrencia._id}')">Excluir</button>
+        </div>
+      `;
+      lista.appendChild(li);
+    });
+  }
+  
+
+function handleDelete(id) {
+  if (confirm("Tem certeza que deseja excluir esta ocorrência?")) {
+    fetch(`${baseURL}/${id}`, { method: "DELETE" })
+      .then(response => response.json())
+      .then(data => {
+        console.log("Ocorrência deletada:", data);
+        carregarOcorrencias();
+      })
+      .catch(err => {
+        console.error("Erro ao deletar ocorrência:", err);
+        alert("Erro ao excluir a ocorrência. Veja o console para detalhes.");
+      });
+  }
 }
 
-// Chame a função para carregar as ocorrências quando a página carregar
-window.addEventListener('DOMContentLoaded', carregarOcorrencias);
+// Função para editar: redireciona para a página de edição com o id na query string
+function handleEdit(id) {
+  window.location.href = `editarOcorrencia.html?id=${id}`;
+}
+
+// Carrega ocorrências quando a página é carregada
+document.addEventListener("DOMContentLoaded", carregarOcorrencias);
