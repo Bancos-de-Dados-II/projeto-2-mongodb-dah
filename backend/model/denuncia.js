@@ -1,3 +1,4 @@
+import { HostNotReachableError } from 'sequelize';
 import mongoose from '../database/mongoose.js';
 
 const DenunciaSchema = new mongoose.Schema({
@@ -18,6 +19,21 @@ const DenunciaSchema = new mongoose.Schema({
       required: true,
     },
   },
+  tipo: {
+    type: String,
+    required: true,
+  },
+
+  dataOcorrencia: {
+    type: Date,
+    required: true,
+  },
+
+  horarioOcorrencia: {
+    type: String,
+    required: true,
+  },
+
   descricao: {
     type: String,
     required: true,
