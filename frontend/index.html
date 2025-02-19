@@ -11,12 +11,14 @@
       rel="stylesheet"
       crossorigin="anonymous"
     />
+
     <!-- Leaflet CSS -->
     <link
       rel="stylesheet"
       href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
       crossorigin=""
     />
+
     <!-- External CSS -->
     <link rel="stylesheet" type="text/css" href="Style/style.css" />
 
@@ -59,7 +61,6 @@
         >
           <span class="navbar-toggler-icon"></span>
         </button>
-
         <div class="collapse navbar-collapse" id="navbarNav">
           <ul class="navbar-nav me-auto mb-2 mb-lg-0">
             <li class="nav-item">
@@ -88,10 +89,12 @@
     <!-- Formulário para inserir ocorrência -->
     <div class="w-100 d-flex justify-content-center py-4">
       <div class="form-width">
+        <!-- Campo: Título -->
         <div class="mb-3">
           <label for="titulo" class="form-label">Título da ocorrência</label>
           <input type="text" id="titulo" class="form-control" required />
         </div>
+        <!-- Campo: Tipo -->
         <div class="mb-3">
           <label for="tipo" class="form-label">Tipo da ocorrência</label>
           <select id="tipo" class="form-select" required>
@@ -102,14 +105,22 @@
             <option value="roubo">Feminicidio</option>
           </select>
         </div>
+        <!-- Campo: Descrição -->
+        <div class="mb-3">
+          <label for="descricao" class="form-label">Descrição da ocorrência</label>
+          <textarea id="descricao" class="form-control" rows="3" required></textarea>
+        </div>
+        <!-- Campo: Data -->
         <div class="mb-3">
           <label for="data" class="form-label">Data da ocorrência</label>
           <input type="date" id="data" class="form-control" required />
         </div>
+        <!-- Campo: Hora -->
         <div class="mb-3">
           <label for="hora" class="form-label">Hora da ocorrência</label>
           <input type="time" id="hora" class="form-control" required />
         </div>
+        <!-- Botões -->
         <div class="d-flex gap-2">
           <button class="btn btn-success" onclick="salvar()">Adicionar</button>
           <button class="btn btn-warning" onclick="salvarRascunho()">Rascunho</button>
@@ -121,51 +132,58 @@
 
     <!-- Footer -->
     <footer class="text-center text-lg-start bg-light text-muted">
-      <div class="text-center p-4">Danilo Duarte, Henrique Elias. © 2025</div>
+      <div class="text-center p-4">
+        Danilo Duarte, Henrique Elias. © 2025
+      </div>
     </footer>
 
-    <!-- Bootstrap 5 JS -->
+    <!-- Scripts do Bootstrap e Leaflet -->
     <script
       src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
       crossorigin="anonymous"
     ></script>
-    <!-- Leaflet JS -->
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script
+      src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+      crossorigin=""
+    ></script>
 
-    <!-- Código Inline de Fetch para Inserção de Ocorrência -->
+    <!-- Código Inline: Funções de Fetch para Inserir e Recuperar Ocorrências -->
     <script>
-      const apiURL = "http://localhost:3000/"; // Ajuste para o endpoint correto do backend
+      // Endpoint para as ocorrências (ajuste conforme seu backend)
+      const apiURL = "http://localhost:3000/";
 
-      // Função para coletar os dados do formulário e da posição do marcador
+      // Coleta os valores dos campos do formulário
       function getValuesField() {
-        const latLng = marker ? marker.getLatLng() : map.getCenter();
-        return {
-          titulo: document.getElementById("titulo").value,
-          tipo: document.getElementById("tipo").value,
-          data: document.getElementById("data").value,
-          hora: document.getElementById("hora").value,
-          geometria: {
-            type: "Point",
-            // No padrão GeoJSON, as coordenadas são [longitude, latitude]
-            coordinates: [latLng.lng, latLng.lat],
-          },
-        };
-      }
+       // Se o marcador não existir, pega o centro do mapa
+         const latLng = marker ? marker.getLatLng() : map.getCenter();
+  
+         return {
+           nome: document.getElementById("titulo").value, // Mapeia o título para o campo 'nome'
+           tipo: document.getElementById("tipo").value,
+           dataOcorrencia: document.getElementById("data").value, // Mapeia o campo de data para 'dataOcorrencia'
+           horarioOcorrencia: document.getElementById("hora").value, // Mapeia o campo de hora para 'horarioOcorrencia'
+            descricao: document.getElementById("descricao").value, // Campo extra para descrição
+            localizacao: {
+             type: "Point",
+              // Padrão GeoJSON: [longitude, latitude]
+                coordinates: [latLng.lng, latLng.lat],
+         }
+       };
+}
 
-      // Função para salvar a ocorrência
+
+      // Salva a ocorrência (chama o endpoint POST)
       function salvar() {
         const obj = getValuesField();
         fetch(apiURL, {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify(obj),
         })
           .then(response => {
             if (response.ok) {
               alert("Ocorrência salva com sucesso!");
-              // Opcional: Limpar formulário ou atualizar o estado
+              carregarMarcadores(); // Atualiza marcadores após inserir
             } else {
               alert("Falha ao salvar a ocorrência!");
             }
@@ -176,14 +194,12 @@
           });
       }
 
-      // Função para salvar um rascunho (similar, se o endpoint existir)
+      // Função para salvar rascunho (se o endpoint existir)
       function salvarRascunho() {
         const obj = getValuesField();
         fetch(apiURL + "/rascunho", {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify(obj),
         })
           .then(response => {
@@ -199,15 +215,15 @@
           });
       }
 
-      // Função para recuperar o rascunho
+      // Função para recuperar rascunho (se o endpoint existir)
       function recuperarRascunho() {
-        fetch(apiURL + "../router/routerRascunho.js")
+        fetch(apiURL + "/rascunho")
           .then(response => response.json())
           .then(data => {
-            // Preenche os campos do formulário com os dados recuperados
             if (data) {
               document.getElementById("titulo").value = data.titulo || "";
               document.getElementById("tipo").value = data.tipo || "";
+              document.getElementById("descricao").value = data.descricao || "";
               document.getElementById("data").value = data.data || "";
               document.getElementById("hora").value = data.hora || "";
               alert("Rascunho recuperado!");
@@ -222,31 +238,61 @@
       }
     </script>
 
-    <!-- Código Inline para Inicializar o Mapa e o Marcador -->
+    <!-- Código Inline: Inicialização do Mapa e Carregamento de Marcadores Existentes -->
     <script>
       let map;
       let marker;
 
       document.addEventListener("DOMContentLoaded", function () {
-        // Inicializa o mapa com um centro definido
-        map = L.map('map').setView([-6.8896495335874, -38.545350052293905], 13);
+        // Inicializa o mapa com um centro padrão
+        map = L.map("map").setView([-6.8896495335874, -38.545350052293905], 13);
 
         // Adiciona a camada de tiles do OpenStreetMap
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-          attribution: '&copy; OpenStreetMap contributors'
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+          attribution: "&copy; OpenStreetMap contributors",
         }).addTo(map);
 
-        // Cria um marcador draggável no centro do mapa
+        // Cria um marcador draggável no centro do mapa (para nova ocorrência)
         marker = L.marker(map.getCenter(), { draggable: true }).addTo(map);
-
-        // Atualiza a posição do marcador ao ser arrastado
-        marker.on('dragend', function () {
+        marker.on("dragend", function () {
           console.log("Nova posição do marcador:", marker.getLatLng());
         });
+
+        // Carrega marcadores existentes (ocorrências já cadastradas)
+        carregarMarcadores();
       });
+
+      // Função para carregar ocorrências e adicionar marcadores ao mapa
+      function carregarMarcadores() {
+        // Supondo que o endpoint para listar ocorrências seja "/denuncias"
+        fetch("http://localhost:3000/")
+          .then(response => {
+            if (!response.ok) {
+              throw new Error(`Erro HTTP! Código: ${response.status}`);
+            }
+            return response.json();
+          })
+          .then(ocorrencias => {
+            console.log("Marcadores recebidos:", ocorrencias);
+            ocorrencias.forEach(ocorrencia => {
+              if (ocorrencia.geometria && ocorrencia.geometria.coordinates) {
+                const coords = ocorrencia.geometria.coordinates;
+                // Cria um marcador para cada ocorrência
+                L.marker([coords[1], coords[0]])
+                  .addTo(map)
+                  .bindPopup(
+                    `<strong>${ocorrencia.titulo}</strong><br>${ocorrencia.descricao || ""}`
+                  );
+              }
+            });
+          })
+          .catch(error => {
+            console.error("Erro ao carregar marcadores:", error);
+          });
+      }
     </script>
 
-    <!-- Outras referências de scripts externos, se necessário -->
+    <!-- Outros scripts externos, se necessário -->
     <script src="script.js"></script>
     <script src="ocorrenciaList.js"></script>
   </body>
